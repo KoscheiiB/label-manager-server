@@ -1,1 +1,0 @@
-[{"kind":2,"language":"surrealql","value":"docker exec surrealdb /surreal import --conn http://localhost:8000 -u root -p root --ns label_manager_ns --db ttr_sales_db /docker-entrypoint-initdb.d/db_init.surql"}]
