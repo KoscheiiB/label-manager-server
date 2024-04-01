@@ -1,58 +1,23 @@
 version: '3.8'
 services:
-  label-manager-server:
+  app:
+    container_name: record_manager
     build: .
-    command: "npm run dev"
-    working_dir: /home/node/app
     environment:
-      NODE_ENV: development
+      - NODE_ENV=production
     ports:
       - "3001:3001"
     depends_on:
-      - label-manager-database
-    volumes:
-      - /etc/letsencrypt:/etc/letsencrypt:ro
-    networks:
-      - app-network
+      - surrealdb
 
-  label-manager-database:
-    image: postgres
-    env_file: 
-      - .env
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
-    volumes:
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
-      - postgres-data:/var/lib/postgresql/data
+  surrealdb:
+    container_name: surrealdb
+    image: surrealdb/surrealdb:latest
+    command: start --log debug --auth --user root --pass root file://var/lib/surrealdb/record_manager_db.db
     ports:
-      - "5432:5432"
-    networks:
-      - app-network     
+      - "8000:8000"
+    volumes:
+      - ./data/database.db:/var/lib/surrealdb/record_manager_db.db
+      - ./src/scripts:/docker-entrypoint-initdb.d
+    restart: always
 
-  metabase:
-    image: metabase/metabase
-    env_file: 
-      - .env
-    ports:
-      - "3000:3000"
-    depends_on:
-      - label-manager-database
-    environment:
-      MB_DB_TYPE: postgres
-      MB_DB_DBNAME: ${METABASE_DBNAME}
-      MB_DB_PORT: 5432
-      MB_DB_USER: ${METABASE_DBUSER}
-      MB_DB_PASS: ${METABASE_DBPASS}
-      MB_DB_HOST: label-manager-database
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
-
-volumes:
-  postgres-data:
-    driver: local

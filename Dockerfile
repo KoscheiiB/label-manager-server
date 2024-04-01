@@ -1,8 +1,21 @@
+# Use the official Node.js 16 image.
+# https://hub.docker.com/_/node
 FROM node:18-alpine
-RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
-WORKDIR /home/node/app
+
+# Create and change to the app directory.
+WORKDIR /usr/src/app
+
+# Copy application dependency manifests to the container image.
 COPY package*.json ./
-RUN npm install
-COPY --chown=node:node . .
+
+# Install production dependencies.
+RUN npm install --only=production
+
+# Copy local code to the container image.
+COPY . .
+
+# Expose the port the app runs on.
 EXPOSE 3001
-CMD [ "node", "index.js" ]
+
+# Run the web service on container startup.
+CMD ["node", "src/app.js"]
