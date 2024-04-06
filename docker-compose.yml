@@ -13,11 +13,25 @@ services:
   surrealdb:
     container_name: surrealdb
     image: surrealdb/surrealdb:latest
-    command: start --log debug --auth --user root --pass root file://var/lib/surrealdb/record_manager_db.db
+    command: start --log trace --auth --user root --pass root file://var/lib/surrealdb/record_manager_db.db
     ports:
       - "8000:8000"
     volumes:
-      - ./data/database.db:/var/lib/surrealdb/record_manager_db.db
+      - ./data:/var/lib/surrealdb
       - ./src/scripts:/docker-entrypoint-initdb.d
     restart: always
 
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin  # Default admin user, change as needed
+      - GF_SECURITY_ADMIN_PASSWORD=admin  # Default admin password, change as needed
+    ports:
+      - "3000:3000" 
+    volumes:
+      - grafana-storage:/var/lib/grafana  
+    restart: always
+
+volumes:
+  grafana-storage:

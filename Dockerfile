@@ -1,5 +1,4 @@
-# Use the official Node.js 16 image.
-# https://hub.docker.com/_/node
+# Use the official Node.js 18 image.
 FROM node:18-alpine
 
 # Create and change to the app directory.
