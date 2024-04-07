@@ -10,6 +10,8 @@ const api = new Bandcamp({
   secret: process.env.BANDCAMP_CLIENT_SECRET,
 });
 
+// LINK
+
 let accessToken;
 let refreshToken;
 
